@@ -31,20 +31,26 @@
         android:label="RegisterFragment">
 
         <argument
-            android:name="name"
-            app:argType="string" />
+            android:name="scannedAp"
+            app:argType="com.example.composeapp.model.AccessPoint"
+            app:nullable="true" />
 
         <argument
-            android:name="mac"
-            app:argType="string" />
+            android:name="registeredAp"
+            app:argType="com.example.composeapp.model.ApPositionInfo"
+            app:nullable="true" />
 
         <argument
-            android:name="rssi"
-            app:argType="integer" />
+            android:name="action"
+            app:argType="string" />
 
     </fragment>
     <fragment
         android:id="@+id/registeredFragment"
         android:name="com.example.composeapp.feature.RegisteredFragment"
-        android:label="RegisteredFragment" />
+        android:label="RegisteredFragment">
+        <action
+            android:id="@+id/to_edit"
+            app:destination="@id/registerFragment" />
+    </fragment>
 </navigation>

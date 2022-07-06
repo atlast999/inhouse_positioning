@@ -2,10 +2,14 @@ package com.example.composeapp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -44,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import com.example.composeapp.databinding.ActivityMainBinding
 import com.example.composeapp.model.AccessPoint
 import com.example.composeapp.ui.theme.ComposeAppTheme
@@ -57,21 +62,48 @@ import kotlin.random.Random
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var wifiManager: WifiManager
 
-    private val listAP = mutableMapOf<String, AccessPoint>()
-
-    fun registerNewAP(ap: AccessPoint) {
-        listAP[ap.mac] = ap
-    }
-
-    fun getListAp() = listAP
-
-    val samples = mutableMapOf<String, List<AccessPoint>>()
+    val scannedApFlow = MutableLiveData(listOf<AccessPoint>())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         requestPermission()
+        wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+        val wifiScanReceiver = object : BroadcastReceiver() {
+
+            override fun onReceive(context: Context, intent: Intent) {
+                val success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)
+                if (success) {
+                    scanSuccess(wifiManager)
+                }
+            }
+        }
+
+        IntentFilter().run {
+            addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
+            registerReceiver(wifiScanReceiver, this)
+        }
+    }
+
+    fun startScanning() {
+        wifiManager.startScan()
+    }
+
+    private fun scanSuccess(wifiManager: WifiManager) {
+        val results = wifiManager.scanResults
+        results.map {
+            AccessPoint(
+                name = it.SSID,
+                uid = it.BSSID,
+                rssi = it.level,
+            )
+        }.let {
+            scannedApFlow.value = it
+        }
+
     }
 
     private fun requestPermission() {

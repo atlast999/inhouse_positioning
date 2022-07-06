@@ -1,4 +1,4 @@
-package com.example.composeapp.feature
+package com.example.composeapp.feature.adapter
 
 
 import android.annotation.SuppressLint
@@ -9,16 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.composeapp.databinding.ItemApBinding
 import com.example.composeapp.model.AccessPoint
 
-class CustomAdapter(private val isScanning: Boolean) :
-    RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class ScannedAdapter : RecyclerView.Adapter<ScannedAdapter.ViewHolder>() {
 
     private val mList: MutableList<AccessPoint> = mutableListOf()
     var itemClickListener: (AccessPoint) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            ItemApBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-            isScanning
+            ItemApBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
     }
 
@@ -43,24 +41,17 @@ class CustomAdapter(private val isScanning: Boolean) :
         notifyDataSetChanged()
     }
 
-    class ViewHolder(val binding: ItemApBinding, private val isScanning: Boolean) :
+    class ViewHolder(val binding: ItemApBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: AccessPoint) {
             binding.apply {
                 tvName.text = model.name
-                tvMac.text = model.mac
-                if (isScanning) {
-                    tvRssi.text = model.rssi.toString()
-                    tvRo.visibility = View.INVISIBLE
-                    tvPro.visibility = View.INVISIBLE
-                    textRo.visibility = View.INVISIBLE
-                    textPro.visibility = View.INVISIBLE
-                } else {
-                    tvRo.text = model.ro.toString()
-                    tvPro.text = model.pro.toString()
-                    tvRssi.visibility = View.INVISIBLE
-                    textRssi.visibility = View.INVISIBLE
-                }
+                tvMac.text = model.uid
+                tvRssi.text = model.rssi.toString()
+                tvRo.visibility = View.INVISIBLE
+                tvPro.visibility = View.INVISIBLE
+                textRo.visibility = View.INVISIBLE
+                textPro.visibility = View.INVISIBLE
                 executePendingBindings()
             }
         }

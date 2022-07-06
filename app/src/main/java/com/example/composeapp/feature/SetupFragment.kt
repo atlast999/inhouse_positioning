@@ -1,11 +1,6 @@
 package com.example.composeapp.feature
 
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.composeapp.MainActivity
 import com.example.composeapp.databinding.SetupFragmentBinding
-import com.example.composeapp.model.AccessPoint
+import com.example.composeapp.feature.adapter.ScannedAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -26,13 +21,13 @@ import kotlin.math.pow
 class SetupFragment : Fragment() {
     private lateinit var binding: SetupFragmentBinding
     private val blockingState = MutableStateFlow(false)
-    private val adapter = CustomAdapter(true).apply {
+    private val adapter = ScannedAdapter().apply {
         itemClickListener = {
             findNavController().navigate(
                 SetupFragmentDirections.toRegister(
-                    it.name,
-                    it.mac,
-                    it.rssi,
+                    it,
+                    null,
+                    RegisterFragment.ACTION_REGISTER
                 )
             )
         }
@@ -56,26 +51,11 @@ class SetupFragment : Fragment() {
             findNavController().navigate(SetupFragmentDirections.toRegisteredList())
         }
 
-        val wifiManager = requireActivity().getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val mainActivity = requireActivity() as MainActivity
 
-        val wifiScanReceiver = object : BroadcastReceiver() {
-
-            override fun onReceive(context: Context, intent: Intent) {
-                val success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)
-                if (success) {
-                    scanSuccess(wifiManager)
-                }
-            }
-        }
-
-        IntentFilter().run {
-            addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
-            requireActivity().registerReceiver(wifiScanReceiver, this)
-
-        }
         binding.btnScan.setOnClickListener {
             blockingState.value = true
-            wifiManager.startScan()
+            mainActivity.startScanning()
         }
 
         lifecycleScope.launch {
@@ -86,9 +66,12 @@ class SetupFragment : Fragment() {
                     binding.progressBar.visibility = if (it) {
                         View.VISIBLE
                     } else View.GONE
-
                 }
             }
+        }
+        mainActivity.scannedApFlow.observe(viewLifecycleOwner) {
+            adapter.applyNewData(it)
+            blockingState.value = false
         }
 
     }
@@ -102,20 +85,4 @@ class SetupFragment : Fragment() {
         }
     }
 
-
-    private fun scanSuccess(wifiManager: WifiManager) {
-        val results = wifiManager.scanResults
-        results.map {
-            AccessPoint(
-                name = it.SSID,
-                mac = it.BSSID,
-                rssi = it.level,
-            )
-        }.let {
-            adapter.applyNewData(it)
-            (requireActivity() as MainActivity).samples[binding.edtRoom.text.toString()] = it
-        }
-
-        blockingState.value = false
-    }
 }

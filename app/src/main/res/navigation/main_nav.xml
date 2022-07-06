@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.composeapp.feature.HomeFragment"
+        android:label="HomeFragment">
+        <action
+            android:id="@+id/to_set_up"
+            app:destination="@id/setupFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/setupFragment"
+        android:name="com.example.composeapp.feature.SetupFragment"
+        android:label="SetupFragment">
+        <action
+            android:id="@+id/to_register"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/to_registered_list"
+            app:destination="@id/registeredFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.composeapp.feature.RegisterFragment"
+        android:label="RegisterFragment">
+
+        <argument
+            android:name="name"
+            app:argType="string" />
+
+        <argument
+            android:name="mac"
+            app:argType="string" />
+
+        <argument
+            android:name="rssi"
+            app:argType="integer" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/registeredFragment"
+        android:name="com.example.composeapp.feature.RegisteredFragment"
+        android:label="RegisteredFragment" />
+</navigation>

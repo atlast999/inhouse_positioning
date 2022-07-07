@@ -8,8 +8,8 @@ interface ApDao {
     @Query("SELECT * FROM ap_info")
     suspend fun getAll(): List<ApPositionInfo>
 
-    @Query("SELECT * FROM ap_info WHERE uid = :uid LIMIT 1")
-    suspend fun getByUid(uid: String): ApPositionInfo
+    @Query("SELECT * FROM ap_info WHERE uid IN (:uid)")
+    suspend fun getByUid(uid: List<String>): List<ApPositionInfo>
 
     @Insert
     suspend fun insertAll(vararg aps: ApPositionInfo)

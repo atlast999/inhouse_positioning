@@ -16,7 +16,6 @@ import com.example.composeapp.feature.adapter.ScannedAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlin.math.pow
 
 class SetupFragment : Fragment() {
     private lateinit var binding: SetupFragmentBinding
@@ -75,14 +74,4 @@ class SetupFragment : Fragment() {
         }
 
     }
-
-    private fun getDistanceRssi(rssi: Int): Double {
-        val r0 = 4
-        val pr0 = -42.6
-        val n = 2.4
-        return (pr0 - rssi.toDouble()).div(10 * n).let {
-            10.0.pow(it) * r0
-        }
-    }
-
 }

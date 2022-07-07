@@ -73,7 +73,6 @@ class MainActivity : AppCompatActivity() {
         wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
 
         val wifiScanReceiver = object : BroadcastReceiver() {
-
             override fun onReceive(context: Context, intent: Intent) {
                 val success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)
                 if (success) {

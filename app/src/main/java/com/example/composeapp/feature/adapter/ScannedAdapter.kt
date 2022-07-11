@@ -34,6 +34,8 @@ class ScannedAdapter : RecyclerView.Adapter<ScannedAdapter.ViewHolder>() {
         return mList.size
     }
 
+    fun getData(): List<AccessPoint> = mList
+
     @SuppressLint("NotifyDataSetChanged")
     fun applyNewData(data: List<AccessPoint>) {
         mList.clear()

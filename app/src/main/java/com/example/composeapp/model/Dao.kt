@@ -20,3 +20,16 @@ interface ApDao {
     @Delete
     suspend fun delete(ap: ApPositionInfo)
 }
+
+@Dao
+interface SampleDao {
+
+    @Query("SELECT * FROM samples")
+    suspend fun getAll(): List<PositionSample>
+
+    @Insert
+    suspend fun insertAll(vararg sample: PositionSample)
+
+    @Delete
+    suspend fun delete(sample: PositionSample)
+}

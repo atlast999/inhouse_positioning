@@ -11,23 +11,64 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/btn_locate"
+            android:id="@+id/btn_locate_power"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="144dp"
             android:text="Locate me"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/btn_setup"
+            android:id="@+id/btn_setup_power"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Setup"
+            android:layout_marginTop="32dp"
+            android:text="Setup power"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_locate_power" />
+
+        <Button
+            android:id="@+id/btn_locate_sample"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp"
+            android:text="Find sample"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_setup_power" />
+
+        <Button
+            android:id="@+id/btn_setup_sample"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Setup sample"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_locate_sample" />
+
+        <TextView
+            android:id="@+id/tv_result_sample"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/btn_locate_sample"
+            app:layout_constraintEnd_toEndOf="@+id/btn_locate_sample"
+            app:layout_constraintStart_toStartOf="@+id/btn_locate_sample" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:shadowColor="#F44336"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_locate" />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

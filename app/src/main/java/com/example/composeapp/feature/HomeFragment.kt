@@ -1,11 +1,14 @@
 package com.example.composeapp.feature
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.composeapp.MainActivity
 import com.example.composeapp.app.AppDatabase
@@ -13,48 +16,92 @@ import com.example.composeapp.databinding.HomeFragmentBinding
 import com.example.composeapp.model.AccessPoint
 import com.example.composeapp.model.ApDao
 import com.example.composeapp.model.ApPositionInfo
+import com.example.composeapp.model.SampleDao
 import com.example.composeapp.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.pow
 
 class HomeFragment : Fragment() {
+
+    enum class LocatingState {
+        BY_POWER,
+        BY_SAMPLE,
+        NONE,
+    }
+
     private lateinit var binding: HomeFragmentBinding
-    private val locatedFlow = MutableStateFlow(false)
+    private val locatedFlow = MutableStateFlow(LocatingState.NONE)
     private val previousAps = mutableMapOf<String, ApPositionInfo>()
     private val currentAps = mutableMapOf<String, ApPositionInfo>()
     private lateinit var apDao: ApDao
+    private lateinit var sampleDao: SampleDao
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        apDao = AppDatabase.getInstance(requireContext()).apDao()
+        AppDatabase.getInstance(requireContext()).let {
+            sampleDao = it.sampleDao()
+            apDao = it.apDao()
+        }
+
         binding = HomeFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+    @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mainActivity = requireActivity() as MainActivity
-        binding.btnLocate.setOnClickListener {
-            locatedFlow.value = false
-            mainActivity.startScanning()
+        binding.apply {
+            btnLocatePower.setOnClickListener {
+                locatedFlow.value = LocatingState.BY_POWER
+                mainActivity.startScanning()
+            }
+            btnSetupPower.setOnClickListener {
+                findNavController().navigate(HomeFragmentDirections.toSetUp(SetupFragment.SETUP_POWER))
+            }
+
+            btnLocateSample.setOnClickListener {
+                locatedFlow.value = LocatingState.BY_SAMPLE
+                mainActivity.startScanning()
+            }
+            btnSetupSample.setOnClickListener {
+                findNavController().navigate(HomeFragmentDirections.toSetUp(SetupFragment.SETUP_SAMPLE))
+            }
         }
-        binding.btnSetup.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.toSetUp())
-        }
+
+
         mainActivity.scannedApFlow.observe(viewLifecycleOwner) {
             it?.let {
-                handleScannedAp(it)
+                when (locatedFlow.value) {
+                    LocatingState.BY_POWER -> handleScannedPower(it)
+                    LocatingState.BY_SAMPLE -> handleScannedSample(it)
+                    else -> {}
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(
+                state = Lifecycle.State.STARTED,
+            ) {
+                locatedFlow.collectLatest {
+                    binding.progressBar.visibility = when (it) {
+                        LocatingState.NONE -> View.GONE
+                        else -> View.VISIBLE
+                    }
+                }
             }
         }
     }
 
-    private fun handleScannedAp(aps: List<AccessPoint>) {
+    private fun handleScannedPower(aps: List<AccessPoint>) {
         if (aps.isEmpty()) return
         lifecycleScope.launch {
             val scannedApsMap = aps.associateBy { it.uid }
@@ -95,6 +142,20 @@ class HomeFragment : Fragment() {
                 10.0.pow(it) * ap.ro
             }
         }.toTypedArray()
+    }
+
+    private fun handleScannedSample(signals: List<AccessPoint>) {
+        lifecycleScope.launch {
+            val samples = sampleDao.getAll()
+            samples.associateWith {
+                it.calculateEclipseDistance(signals)
+            }.minByOrNull { it.value }?.let {
+                withContext(Dispatchers.Main) {
+                    locatedFlow.value = LocatingState.NONE
+                    binding.tvResultSample.text = "${it.key.name} - ${it.value}"
+                }
+            }
+        }
     }
 
 }

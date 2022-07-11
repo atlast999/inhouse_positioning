@@ -12,10 +12,10 @@
         android:padding="10dp">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_marginBottom="20dp"
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="20dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/btn_scan"
             app:layout_constraintEnd_toEndOf="parent"
@@ -24,29 +24,19 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-        <!--        <EditText-->
-        <!--            android:id="@+id/edt_room"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:ems="4"-->
-        <!--            app:layout_constraintEnd_toStartOf="@id/btn_scan"-->
-        <!--            app:layout_constraintHorizontal_bias="0.288"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="@id/btn_scan" />-->
-
         <Button
-            android:layout_marginBottom="10dp"
             android:id="@+id/btn_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:text="scan"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_view"
+            app:layout_constraintBottom_toTopOf="@+id/layout_sample"
+            app:layout_constraintEnd_toStartOf="@+id/btn_view_registered"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
-            android:id="@+id/btn_view"
+            android:id="@+id/btn_view_registered"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="đã đkí"
@@ -66,6 +56,41 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layout_sample"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+
+            <TextView
+                android:id="@+id/tv_sample"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sample name: " />
+
+            <EditText
+                android:id="@+id/edt_sample"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_weight="1"
+                android:ems="5"
+                android:inputType="textPersonName"
+                android:text="" />
+
+            <Button
+                android:id="@+id/btn_save_sample"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sava sample" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

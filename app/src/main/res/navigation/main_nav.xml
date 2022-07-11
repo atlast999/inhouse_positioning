@@ -17,12 +17,20 @@
         android:id="@+id/setupFragment"
         android:name="com.example.composeapp.feature.SetupFragment"
         android:label="SetupFragment">
+
+        <argument
+            android:name="setup_type"
+            app:argType="string" />
+
         <action
             android:id="@+id/to_register"
             app:destination="@id/registerFragment" />
         <action
             android:id="@+id/to_registered_list"
             app:destination="@id/registeredFragment" />
+        <action
+            android:id="@+id/to_registered_samples"
+            app:destination="@id/sampleFragment" />
     </fragment>
 
     <fragment
@@ -52,5 +60,21 @@
         <action
             android:id="@+id/to_edit"
             app:destination="@id/registerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sampleFragment"
+        android:name="com.example.composeapp.feature.SampleFragment"
+        android:label="SampleFragment">
+        <action
+            android:id="@+id/to_detail"
+            app:destination="@id/sampleDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sampleDetailFragment"
+        android:name="com.example.composeapp.feature.SampleDetailFragment"
+        android:label="SampleDetailFragment">
+        <argument
+            android:name="sample"
+            app:argType="com.example.composeapp.model.PositionSample" />
     </fragment>
 </navigation>

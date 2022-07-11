@@ -7,10 +7,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.composeapp.model.ApDao
 import com.example.composeapp.model.ApPositionInfo
+import com.example.composeapp.model.PositionSample
+import com.example.composeapp.model.SampleDao
 
-@Database(entities = [ApPositionInfo::class], version = 1)
+@Database(entities = [ApPositionInfo::class, PositionSample::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun apDao(): ApDao
+    abstract fun sampleDao(): SampleDao
 
     companion object {
         @Volatile

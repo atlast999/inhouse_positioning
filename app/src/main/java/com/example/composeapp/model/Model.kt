@@ -11,13 +11,6 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 @Parcelize
-data class AccessPoint(
-    val uid: String,
-    val name: String,
-    var rssi: Int,
-) : Parcelable
-
-@Parcelize
 @Entity(tableName = "ap_info")
 data class ApPositionInfo(
     @PrimaryKey @ColumnInfo(name = "uid") val uid: String,
@@ -32,6 +25,13 @@ data class ApPositionInfo(
     @IgnoredOnParcel
     var rssi: Int = 0
 }
+
+@Parcelize
+data class AccessPoint(
+    val uid: String,
+    val name: String,
+    var rssi: Int,
+) : Parcelable
 
 @Parcelize
 @Entity(tableName = "samples")

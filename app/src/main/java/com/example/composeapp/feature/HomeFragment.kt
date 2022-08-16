@@ -18,12 +18,16 @@ import com.example.composeapp.model.ApDao
 import com.example.composeapp.model.ApPositionInfo
 import com.example.composeapp.model.SampleDao
 import com.example.composeapp.toast
+import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver
+import com.lemmingapex.trilateration.TrilaterationFunction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class HomeFragment : Fragment() {
 
@@ -74,6 +78,9 @@ class HomeFragment : Fragment() {
             btnSetupSample.setOnClickListener {
                 findNavController().navigate(HomeFragmentDirections.toSetUp(SetupFragment.SETUP_SAMPLE))
             }
+            btnSocket.setOnClickListener {
+                findNavController().navigate(HomeFragmentDirections.toSocket())
+            }
         }
 
 
@@ -81,7 +88,7 @@ class HomeFragment : Fragment() {
             it?.let {
                 when (locatedFlow.value) {
                     LocatingState.BY_POWER -> handleScannedPower(it)
-                    LocatingState.BY_SAMPLE -> handleScannedSample(it)
+                    LocatingState.BY_SAMPLE -> collectSignals(it)
                     else -> {}
                 }
             }
@@ -142,6 +149,39 @@ class HomeFragment : Fragment() {
                 10.0.pow(it) * ap.ro
             }
         }.toTypedArray()
+    }
+
+    private var scannedCount = 0
+    private val mapOfSample = mutableMapOf<String, MutableList<AccessPoint>>()
+    private fun collectSignals(signals: List<AccessPoint>) {
+        if (scannedCount < 5) {
+            signals.forEach {
+                val listOfSample = mapOfSample[it.uid]
+                if (listOfSample == null) {
+                    mapOfSample[it.uid] = mutableListOf(it)
+                } else {
+                    listOfSample.add(it)
+                }
+            }
+            scannedCount++
+            binding.tvResultPower.text = scannedCount.toString()
+            locatedFlow.value = LocatingState.NONE
+        } else {
+            mapOfSample.map {
+                val key = it.value.first()
+                val value = it.value.sumOf { it.rssi }.toDouble().div(it.value.size)
+                key to value
+            }.sortedBy { -it.second }
+                .take(6)
+                .map {
+                    it.first.apply {
+                        rssi = it.second.roundToInt()
+                    }
+                }.let { list ->
+                    handleScannedSample(list)
+                }
+            scannedCount = 0
+        }
     }
 
     private fun handleScannedSample(signals: List<AccessPoint>) {

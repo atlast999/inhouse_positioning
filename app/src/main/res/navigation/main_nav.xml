@@ -11,6 +11,9 @@
         <action
             android:id="@+id/to_set_up"
             app:destination="@id/setupFragment" />
+        <action
+            android:id="@+id/to_socket"
+            app:destination="@id/socketFragment" />
     </fragment>
 
     <fragment
@@ -77,4 +80,8 @@
             android:name="sample"
             app:argType="com.example.composeapp.model.PositionSample" />
     </fragment>
+    <fragment
+        android:id="@+id/socketFragment"
+        android:name="com.example.composeapp.feature.SocketFragment"
+        android:label="SocketFragment" />
 </navigation>

@@ -70,7 +70,36 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         requestPermission()
-        wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+        if (checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+
+//        (getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager)
+//            .adapter
+//            .bluetoothLeScanner
+//            .startScan(object : ScanCallback() {
+//                override fun onBatchScanResults(results: MutableList<ScanResult>?) {
+//                    results?.first()?.let {
+//                        it.device
+//                        it.rssi
+//                    }
+//                }
+//            })
+
+
+        wifiManager = (getSystemService(Context.WIFI_SERVICE) as WifiManager)
 
         val wifiScanReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
